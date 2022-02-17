@@ -1,21 +1,55 @@
 ---
 title:  'Coding Challenge #4'
 subtitle: 'SWORK 881'
-author:
+author:Stephen Omotayo Ololade
 - name: Student -  [Your name goes here]
 output: html_document
 ---
 
 ## load libraries
 ```{r}
+library(tidyverse)
+
+library(tidymodels)
+
+library(quantreg)
+
+library(MASS)
+library(dplyr)
+
+library(splines)
+library(nnet)
+library(SparseM)
 
 ```
 
 ## load dataset
 ```{r}
+data01 <- read_csv("Data/LHS_exercise_02102022.csv")
 
 
+```
 
+
+```{r}
+data02<- data01 %>% 
+	mutate(anxiety = 
+	case_when(phq1_1 >2 & phq2_1 >2 ~ "1", phq1_1 <3 ~ "0" ))
+```
+
+
+```{r}
+data03<- data02 %>%  	mutate(depression =  	case_when(phq3_1 >2 & phq4_1 >2 ~ "1", phq1_1 <3 ~ "0" ))
+
+```
+
+
+```{r}
+
+
+                                
+
+      
 ```
 
 
@@ -32,7 +66,37 @@ We will be creating new variables:
 `age_sd` = standardized `age` variable
 
 
+	
 ```{r}
+data05<- data01%>%
+  mutate(distress = rowSums(across(phq1_1:phq4_1),
+                              na.rm = TRUE))
+```
+
+
+```{r}
+data05 <- data05%>%
+  mutate(anxiety = case_when(phq1_1 + phq2_1 >= 2 ~ 1,
+                           TRUE ~ 0),
+         depression = case_when(phq3_1 + phq4_1 >= 3 ~ 1,
+                           TRUE ~ 0),
+         distress = phq1_1 + phq2_1 + phq3_1 + phq4_1,
+         distress_type_pre = str_c(anxiety,depression),
+         distress_type = case_when(distress_type_pre == '00' ~ 0,
+                                   distress_type_pre == '10' ~ 1,
+                                   distress_type_pre == '01' ~ 2,
+                                   distress_type_pre == '11' ~ 3),
+         distress_cat = case_when(distress <= 4 ~ 'low',
+                                  distress %in% c(5,6,7,8) ~ 'mid',
+                                  distress >= 8 ~ 'high'),
+         age_sd = scale(age)
+
+
+```
+	
+
+
+```
 
 
 ```
